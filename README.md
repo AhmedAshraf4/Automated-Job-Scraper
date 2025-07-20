@@ -7,12 +7,12 @@ A workflow automation that scrapes, cleans, and delivers personalized job listin
 ## 🚀 Overview
 
 This project helps job seekers by:
-✅ Accepting job search queries through Telegram.
-✅ Scraping job listings using Apify API.
-✅ Cleaning and deduplicating job data.
-✅ Sending curated job results back to Telegram.
-✅ Tracking interview dates and sending reminders.
-✅ Logging all jobs & interviews into Google Sheets for record-keeping.
+- ✅ Accepting job search queries through Telegram.
+- ✅ Scraping job listings using Apify API.
+- ✅ Cleaning and deduplicating job data.
+- ✅ Sending curated job results back to Telegram.
+- ✅ Tracking interview dates and sending reminders.
+- ✅ Logging all jobs & interviews into Google Sheets for record-keeping.
 
 All implemented as a no-code/low-code workflow on **n8n**.
 
