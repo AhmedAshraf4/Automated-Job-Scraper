@@ -1,0 +1,990 @@
+{
+  "name": "Automated job scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        320
+      ],
+      "id": "03ea5dd7-da88-4dc0-a9f9-2a187039508d",
+      "name": "Telegram Trigger",
+      "webhookId": "fb766e60-8978-459f-a122-2b051ff810f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "VYGLFUCA0omdzAvx",
+          "name": "Automated job finder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "235a0ddb-7e5e-4bba-869d-d5fb676e71be",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        320
+      ],
+      "id": "3f4af009-af80-4e8e-ade8-d6bd8d2e4f54",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Enter the job title you want to search for...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        224
+      ],
+      "id": "fa43a76c-5ba1-4cae-87a2-25d2c456db73",
+      "name": "Send a text message",
+      "webhookId": "21ba78db-1479-47d7-bcde-1001d95ab910",
+      "credentials": {
+        "telegramApi": {
+          "id": "VYGLFUCA0omdzAvx",
+          "name": "Automated job finder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/BHzefUZlZRKWxkTck/run-sync-get-dataset-items",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer apify_api_PUHD2OIgYIlBQWqX08vkyAsywmZcFV3xQr9Z"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"proxy\": {\n        \"useApifyProxy\": true,\n        \"apifyProxyGroups\": [\n            \"RESIDENTIAL\"\n        ]\n    },\n    \"rows\": 10,\n    \"title\": \"{{ $json.message.text }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        224
+      ],
+      "id": "87f3dd75-5c3c-4d57-9c43-f72a15734754",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo",
+          "mode": "list",
+          "cachedResultName": "Automated job finder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        736,
+        416
+      ],
+      "id": "b5c9c01a-d043-4c88-990e-12ad8eb49532",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaZR68CC5U8JwznD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        960,
+        416
+      ],
+      "id": "32280975-0edc-4af4-a1cb-63b11de2487a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4a3b7d0d-6658-48cd-9c76-9623210442a9",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "1f557242-c9bf-40e6-8574-9eb8d9fcc23f",
+              "name": "companyName",
+              "value": "={{ $json.companyName }}",
+              "type": "string"
+            },
+            {
+              "id": "161d64b9-c728-4a93-82d5-fe883ff7ac16",
+              "name": "contractType",
+              "value": "={{ $json.contractType }}",
+              "type": "string"
+            },
+            {
+              "id": "9595fa7f-7521-45f6-acf5-f28775b04356",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "168cf5a1-e31f-48ba-90bb-a9714ee09d9e",
+              "name": "salary",
+              "value": "={{ $json.salary }}",
+              "type": "string"
+            },
+            {
+              "id": "697f8c33-c748-440b-a6da-139cb736b5bb",
+              "name": "jobUrl",
+              "value": "={{ $json.jobUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        224
+      ],
+      "id": "17b33ef6-5acd-4ff0-80bb-8e7ceb2eb004",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "from collections import Counter\n\n# Step 1: Get first 10 and rest\nfirst_10 = items[:10]\nrest = items[10:]\n\n# Step 2: Collect jobUrls from the rest\nrest_urls = set(item['json'].get('jobUrl', '') for item in rest)\n\n# Step 3: Filter out any item from first 10 whose jobUrl is in rest\nfiltered_first_10 = [\n    item for item in first_10\n    if item['json'].get('jobUrl', '') not in rest_urls\n]\n\n# Step 4: Count duplicates in the filtered first 10\nurl_counts = Counter(item['json'].get('jobUrl', '') for item in filtered_first_10)\n\noutput = []\n\nfor item in filtered_first_10:\n    data = item['json']\n    job_url = data.get('jobUrl', '')\n\n    # Skip if duplicate in first 10\n    if url_counts[job_url] > 1:\n        continue\n\n    description = data.get('description', '')\n    lines = [line.strip() for line in description.splitlines() if line.strip()]\n    line_counts = Counter(lines)\n    unique_lines = [line for line in lines if line_counts[line] == 1]\n    cleaned_description = \"\\n\".join(unique_lines)\n\n    cleaned_item = {\n        \"title\": data.get(\"title\", \"\"),\n        \"companyName\": data.get(\"companyName\", \"\"),\n        \"contractType\": data.get(\"contractType\", \"\"),\n        \"description\": cleaned_description,\n        \"salary\": data.get(\"salary\", \"\"),\n        \"jobUrl\": job_url\n    }\n\n    output.append({\"json\": cleaned_item})\n\nreturn output\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        416
+      ],
+      "id": "d0f5cbd8-ed5e-4e70-b805-7bfe0fd1d17e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6d312e3e-3498-491b-8f8f-bf7df62a64ca",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Interview with",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        416
+      ],
+      "id": "542d396c-4d78-4330-b9b6-c9c00b8012a5",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const message = $input.first().json.message.text;\n  console.log(\"HI\");\n  console.log(message);\n  const match = message.match(/Interview with (.+?) at (.+)/i);\n\n  if (match) {\n    return {\n      json: {\n        company: match[1].trim(),\n        date: match[2].trim()\n      }\n    };\n  }\n\n  return {\n    json: {\n      company: null,\n      date: null\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        608
+      ],
+      "id": "e2977e1a-7685-4104-92fc-1dfca6e1ac4d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo",
+          "mode": "list",
+          "cachedResultName": "Automated job finder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "companyName": "={{ $json.companyName }}",
+            "contractType": "={{ $json.contractType }}",
+            "description": "={{ $json.description }}",
+            "salary": "={{ $json.salary }}",
+            "jobUrl": "={{ $json.jobUrl }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contractType",
+              "displayName": "contractType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "salary",
+              "displayName": "salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobUrl",
+              "displayName": "jobUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "applyDate",
+              "displayName": "applyDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1408,
+        416
+      ],
+      "id": "8e2ab329-1de9-42a4-8a26-ef469373bf53",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaZR68CC5U8JwznD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1632,
+        416
+      ],
+      "id": "8748f4b8-5ff1-4dd7-92a6-d0db98c60ddd",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Here is a job that you might be interested in!!!\n\nJob title: {{ $json.title }}\nCompany name: {{ $json.companyName }}\ncontract type: {{ $json.contractType }}\nSalary: {{ $json.salary }}\n\n\napply with this link: {{ $json.jobUrl }}\n\nGOODLUCK !!!!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1856,
+        416
+      ],
+      "id": "4b6c0db6-538d-43e7-9518-c017c15caee0",
+      "name": "Send a text message1",
+      "webhookId": "6cee06bb-1104-43e8-ba2d-5203f46d211b",
+      "credentials": {
+        "telegramApi": {
+          "id": "VYGLFUCA0omdzAvx",
+          "name": "Automated job finder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c90da459-7861-4cf8-af8c-48fe20e7d3e9",
+              "leftValue": "={{ $now.toString() }}",
+              "rightValue": "={{ $json.date }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "307ffc69-a2c1-4aed-9eeb-e79d0e669d61",
+              "leftValue": "={{ $json.date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        608
+      ],
+      "id": "97962cd8-c03c-42d2-a72b-2a7ec91bd3a0",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=You have a Job interview with  {{ $json.company }} today!! Goodluck..",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        608
+      ],
+      "id": "d57ba76c-8aa2-4083-91d4-490e843c3f80",
+      "name": "Send a text message2",
+      "webhookId": "19e2e854-473a-45da-9a28-3db3f711fb13",
+      "credentials": {
+        "telegramApi": {
+          "id": "VYGLFUCA0omdzAvx",
+          "name": "Automated job finder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo",
+          "mode": "list",
+          "cachedResultName": "Automated job finder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "companyName": "={{ $json.company }}",
+            "applyDate": "={{ $json.date }}"
+          },
+          "matchingColumns": [
+            "companyName"
+          ],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contractType",
+              "displayName": "contractType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "salary",
+              "displayName": "salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobUrl",
+              "displayName": "jobUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "applyDate",
+              "displayName": "applyDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        736,
+        608
+      ],
+      "id": "f1b29f2f-b82c-4ba5-b62f-7b6670256542",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaZR68CC5U8JwznD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        800
+      ],
+      "id": "6b83cf32-6711-4d62-935b-7ba04dab7f25",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo",
+          "mode": "list",
+          "cachedResultName": "Automated job finder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZjGegaGYVfFibHkgQCcjPRD-liZb5YSfnVaZzIKuwFo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        192,
+        800
+      ],
+      "id": "a895ff81-2ec6-4c27-84ba-e0223edbd57d",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaZR68CC5U8JwznD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5a158f02-f730-4208-a841-5010bc388591",
+              "leftValue": "={{$now.toString()}}",
+              "rightValue": "={{ $json.applyDate }}",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "40d663a5-0f60-40b1-ac8b-dce38904f7c2",
+              "leftValue": "={{ $json.applyDate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        800
+      ],
+      "id": "4314ef1a-c8c4-4d71-a1d2-56f27802bdb2",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        656,
+        816
+      ],
+      "id": "47cc12d1-f37c-4ddd-95b7-1b98de5064ef",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=You have a Job interview with {{ $json.companyName }} today!! Goodluck..",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        848
+      ],
+      "id": "7590902b-0f2f-40aa-a0cb-4a7e1c40c3f8",
+      "name": "Send a text message3",
+      "webhookId": "6cee06bb-1104-43e8-ba2d-5203f46d211b",
+      "credentials": {
+        "telegramApi": {
+          "id": "VYGLFUCA0omdzAvx",
+          "name": "Automated job finder"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "989cf463-6643-445d-8769-b8ea43428fd2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3540d59e27c16ede9eafc6f4b2b7db9bcd008685a69149ebba4cab2380a89ccf"
+  },
+  "id": "BEe9PLgJoExR3p3A",
+  "tags": []
+}
